@@ -4,13 +4,12 @@
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
-
 # Set up the prompt
 autoload -Uz promptinit
 promptinit
 prompt adam1
 
-export PATH="$PATH:/opt/nvim-linux-x86_64/bin:/home/zhark/.local/bin"
+export PATH="/snap/bin:/opt/nvim-linux-x86_64/bin:/home/zhark/.local/bin:/home/zhark/.local/bin/scripts:$PATH"
 
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
@@ -89,3 +88,41 @@ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 # Shell integrations
 eval "$(fzf --zsh)"
 eval "$(zoxide init zsh)"
+# UV Installation
+if ! command -v uv &> /dev/null; then
+    echo "Installing uv..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+fi
+
+eval "$(uv generate-shell-completion zsh)"
+
+# NVM Configuration and Installation
+export NVM_DIR="$HOME/.nvm"
+if [ ! -d "$NVM_DIR" ]; then
+    echo "Installing nvm..."
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | PROFILE=/dev/null bash
+fi
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Go Installation and Configuration
+export GO_ROOT="${XDG_DATA_HOME:-$HOME/.local/share}/go"
+export GOPATH="$HOME/go"
+export PATH="$GO_ROOT/bin:$GOPATH/bin:$PATH"
+
+if [ ! -d "$GO_ROOT" ]; then
+    echo "Installing Go..."
+    mkdir -p "$GO_ROOT"
+    # Download Go 1.23.4 (adjust version as needed)
+    wget -qO- https://go.dev/dl/go1.23.4.linux-amd64.tar.gz | tar -xz -C "$(dirname "$GO_ROOT")"
+    mv "$(dirname "$GO_ROOT")/go" "$GO_ROOT" 2>/dev/null || true # Handle extraction folder name
+    echo "Go installed."
+fi
+
+# Rust Installation and Configuration
+if ! command -v cargo &> /dev/null; then
+    echo "Installing Rust..."
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+fi
+
+[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
