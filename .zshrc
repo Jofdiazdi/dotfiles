@@ -9,7 +9,7 @@ autoload -Uz promptinit
 promptinit
 prompt adam1
 
-export PATH="/snap/bin:/opt/nvim-linux-x86_64/bin:/home/zhark/.local/bin:/home/zhark/.local/bin/scripts:$PATH"
+export PATH="/snap/bin:/opt/nvim-linux-x86_64/bin:${HOME}/.local/bin:${HOME}/.local/bin/Scripts:${PATH}"
 
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
@@ -82,8 +82,10 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Aliases
 alias ls='ls --color'
-
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+export HOMEBREW_DIR="/home/linuxbrew/.linuxbrew/bin/brew"
+if [ -d "$HOMEBREW_DIR" ]; then
+	eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
 
 # Shell integrations
 eval "$(fzf --zsh)"
